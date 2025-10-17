@@ -190,6 +190,18 @@ agricultural_redis      docker-entrypoint.sh  Up      0.0.0.0:6379->6379/tcp
   Redis: localhost:6379
 ```
 
+**⚠️ If setup fails, use the manual method:**
+```bash
+# Manual setup (if automated setup fails)
+cd backend
+source venv/bin/activate
+pip install -r requirements-simple.txt
+python main_simple.py &
+
+cd ../frontend
+python3 -m http.server 3000 &
+```
+
 ---
 
 ## 🔑 Getting API Keys
@@ -324,6 +336,26 @@ API Documentation:       http://localhost:8000/docs
 Health Check:            http://localhost:8000/health
 ```
 
+### ✅ **Verification Steps:**
+
+1. **Check Backend API:**
+   ```bash
+   curl http://localhost:8000/health
+   ```
+   Expected response: `{"status":"healthy","timestamp":"...","version":"1.0.0"}`
+
+2. **Check Frontend:**
+   ```bash
+   curl -I http://localhost:3000
+   ```
+   Expected response: `HTTP/1.0 200 OK`
+
+3. **Test API Endpoint:**
+   ```bash
+   curl "http://localhost:8000/api/weather/current?latitude=17.3850&longitude=78.4867"
+   ```
+   Expected response: JSON with weather data
+
 ### Stopping the System
 
 ```bash
@@ -352,29 +384,50 @@ docker-compose logs -f backend
 
 ## 🎮 Using the System
 
+### ✅ **Current Working Status**
+
+**The system is currently running with:**
+- ✅ **Backend API** - Fully functional with demo data
+- ✅ **Frontend Web App** - Beautiful interface with live API testing
+- ✅ **Database** - PostgreSQL running and connected
+- ✅ **Cache** - Redis running for performance
+- ✅ **All API Endpoints** - Working with mock/demo data
+
+**What works right now:**
+- 🌐 **Web Interface** - Fully interactive dashboard
+- 🧪 **API Testing** - Live demo buttons for all endpoints
+- 📊 **Disease Detection** - Demo responses with mock AI analysis
+- 🌤️ **Weather Data** - Sample weather information
+- 💰 **Market Prices** - Mock crop price data
+- 💬 **WhatsApp Demo** - Simulated messaging responses
+
 ### 1. Web Dashboard
 
 **Access:** http://localhost:3000
 
 **Features you can try:**
 
-#### Disease Detection:
-1. Click "Disease Detection" in the menu
-2. Click "Upload Image" area
-3. Select a crop image (JPG/PNG)
-4. Choose crop type (rice, wheat, etc.)
-5. Click "Analyze Image"
-6. See the disease detection results!
+#### Disease Detection Demo:
+1. Go to http://localhost:3000
+2. Click "Disease Detection" button
+3. See AI-powered mock analysis results
+4. View confidence scores and recommendations
 
-#### Weather Information:
-1. Click "Weather" in the menu
-2. Enter your location coordinates
-3. See current weather and forecast
+#### Weather Information Demo:
+1. Click "Weather Data" button
+2. See sample weather information for Hyderabad
+3. View temperature, humidity, and conditions
 
-#### Market Prices:
-1. Click "Market Prices" in the menu
-2. Select your region and crop
-3. View price trends
+#### Market Prices Demo:
+1. Click "Market Prices" button
+2. See sample crop price data
+3. View price trends and market information
+
+#### API Testing:
+1. Use the demo buttons on the main page
+2. Each button tests a different API endpoint
+3. See real-time JSON responses
+4. Test all features without uploading files
 
 ### 2. API Testing
 
@@ -441,14 +494,30 @@ docker --version
 docker-compose down
 
 # Check what's using the ports
-netstat -tulpn | grep :3000
-netstat -tulpn | grep :8000
+# On macOS/Linux:
+lsof -i :3000
+lsof -i :8000
+
+# On Windows:
+netstat -ano | findstr :3000
+netstat -ano | findstr :8000
 
 # Kill processes using those ports (replace PID with actual process ID)
+# On macOS/Linux:
 kill -9 PID
+
+# On Windows:
+taskkill /PID PID /F
 
 # Start services again
 docker-compose up -d
+```
+
+**Alternative: Use different ports**
+```bash
+# Edit docker-compose.yml to use different ports
+# Change "3000:3000" to "3001:3000"
+# Change "8000:8000" to "8001:8000"
 ```
 
 #### Problem 3: "Cannot connect to database" error
@@ -497,14 +566,22 @@ docker-compose restart backend
 curl http://localhost:8000/health
 ```
 
-#### Problem 6: ML model not working
+#### Problem 6: ML model not working (or TensorFlow installation issues)
 
-**Solution:**
+**Solution for TensorFlow issues:**
+```bash
+# If TensorFlow installation fails, use the simplified version
+cd backend
+source venv/bin/activate
+python main_simple.py
+```
+
+**Solution for missing ML model:**
 ```bash
 # Check if model file exists
 ls -la ml_models/
 
-# If missing, create sample model
+# If missing, create sample model (only if TensorFlow is installed)
 cd ml_models
 python3 -c "
 import tensorflow as tf
@@ -525,6 +602,8 @@ print('Model created successfully!')
 "
 cd ..
 ```
+
+**Note:** The system works perfectly with demo data even without TensorFlow!
 
 ### Getting Help
 
@@ -800,5 +879,32 @@ You've successfully set up and deployed an AI-powered Agricultural Advisory Syst
 - Restart services: `docker-compose restart`
 - Reset everything: `docker-compose down -v && ./setup.sh`
 - Check documentation: `README.md` and `DEVELOPMENT_GUIDE.md`
+
+## 🔍 **Quick Verification**
+
+### **Test Your Setup in 30 Seconds:**
+
+1. **Open Browser:** Go to http://localhost:3000
+2. **Check Status:** Should show "✅ API Connected Successfully!"
+3. **Click Buttons:** Test each demo button to see API responses
+4. **Verify Data:** Confirm you see JSON responses with sample data
+
+### **Expected Results:**
+- ✅ **Health Check:** `{"status":"healthy","timestamp":"...","version":"1.0.0"}`
+- ✅ **Weather Data:** Temperature, humidity, and location data
+- ✅ **Disease Detection:** Mock disease analysis with confidence scores
+- ✅ **Market Prices:** Sample crop prices and market information
+- ✅ **WhatsApp Demo:** Simulated messaging response
+
+### **If Something Doesn't Work:**
+```bash
+# Check if services are running
+curl http://localhost:8000/health
+curl -I http://localhost:3000
+
+# Restart if needed
+cd /path/to/your/project
+./setup.sh --restart
+```
 
 **Happy Farming! 🌾🚜**

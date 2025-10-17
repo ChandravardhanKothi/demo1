@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agricultural Advisory System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li:before {
+            content: "🌱";
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .demo-section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .demo-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .result {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result h4 {
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+
+        .result pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+
+        .status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .status.connected {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .api-info {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .api-info h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .api-endpoints {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .endpoint {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .endpoint .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .method.get {
+            background: #48bb78;
+            color: white;
+        }
+
+        .method.post {
+            background: #ed8936;
+            color: white;
+        }
+
+        .endpoint .url {
+            font-family: monospace;
+            color: #4a5568;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 Agricultural Advisory System</h1>
+            <p>AI-powered platform for farmers - Disease Detection, Weather Updates & Market Prices</p>
+        </div>
+
+        <div id="status" class="status">
+            <div>🔄 Checking API connection...</div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3>🤖 Disease Detection</h3>
+                <ul class="feature-list">
+                    <li>Upload crop images</li>
+                    <li>AI-powered disease analysis</li>
+                    <li>Treatment recommendations</li>
+                    <li>Support for 5+ crop types</li>
+                    <li>Confidence scoring</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>🌤️ Weather Integration</h3>
+                <ul class="feature-list">
+                    <li>Real-time weather data</li>
+                    <li>5-day forecasts</li>
+                    <li>Agricultural advisories</li>
+                    <li>Hyperlocal information</li>
+                    <li>Weather-based recommendations</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>💬 WhatsApp Integration</h3>
+                <ul class="feature-list">
+                    <li>Multi-language support</li>
+                    <li>Voice advisories</li>
+                    <li>Text messaging</li>
+                    <li>Broadcast capabilities</li>
+                    <li>Interactive commands</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>📊 Market Prices</h3>
+                <ul class="feature-list">
+                    <li>Real-time price updates</li>
+                    <li>Price trend analysis</li>
+                    <li>Regional market data</li>
+                    <li>Multiple crop varieties</li>
+                    <li>Historical comparisons</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🧪 API Demo</h2>
+            <div class="demo-buttons">
+                <button class="btn" onclick="testHealth()">Health Check</button>
+                <button class="btn" onclick="testDiseaseDetection()">Disease Detection</button>
+                <button class="btn" onclick="testWeather()">Weather Data</button>
+                <button class="btn" onclick="testMarketPrices()">Market Prices</button>
+                <button class="btn" onclick="testWhatsApp()">WhatsApp Demo</button>
+            </div>
+            <div id="result" class="result">
+                <h4>API Response:</h4>
+                <pre id="resultContent">Click a button above to test the API</pre>
+            </div>
+        </div>
+
+        <div class="api-info">
+            <h3>📚 Available API Endpoints</h3>
+            <div class="api-endpoints">
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span class="url">/health</span>
+                    <div style="margin-top: 5px; font-size: 0.9rem; color: #718096;">System health check</div>
+                </div>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span class="url">/api/weather/current</span>
+                    <div style="margin-top: 5px; font-size: 0.9rem; color: #718096;">Current weather data</div>
+                </div>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span class="url">/api/weather/forecast</span>
+                    <div style="margin-top: 5px; font-size: 0.9rem; color: #718096;">Weather forecast</div>
+                </div>
+                <div class="endpoint">
+                    <span class="method get">GET</span>
+                    <span class="url">/api/market/prices</span>
+                    <div style="margin-top: 5px; font-size: 0.9rem; color: #718096;">Market prices</div>
+                </div>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <span class="url">/api/disease/detect</span>
+                    <div style="margin-top: 5px; font-size: 0.9rem; color: #718096;">Disease detection</div>
+                </div>
+                <div class="endpoint">
+                    <span class="method post">POST</span>
+                    <span class="url">/api/whatsapp/send</span>
+                    <div style="margin-top: 5px; font-size: 0.9rem; color: #718096;">Send WhatsApp message</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+        const resultContent = document.getElementById('resultContent');
+
+        // Check API connection on page load
+        async function checkConnection() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.innerHTML = '<div>✅ API Connected Successfully!</div>';
+                    statusDiv.className = 'status connected';
+                } else {
+                    throw new Error('API not responding');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<div>❌ API Connection Failed</div>';
+                statusDiv.className = 'status error';
+            }
+        }
+
+        // Test health endpoint
+        async function testHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                showResult('Health Check', data);
+            } catch (error) {
+                showResult('Health Check Error', { error: error.message });
+            }
+        }
+
+        // Test disease detection
+        async function testDiseaseDetection() {
+            try {
+                const response = await fetch(`${API_BASE}/api/disease/detect`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                showResult('Disease Detection Demo', data);
+            } catch (error) {
+                showResult('Disease Detection Error', { error: error.message });
+            }
+        }
+
+        // Test weather endpoint
+        async function testWeather() {
+            try {
+                const response = await fetch(`${API_BASE}/api/weather/current?latitude=17.3850&longitude=78.4867`);
+                const data = await response.json();
+                showResult('Weather Data Demo', data);
+            } catch (error) {
+                showResult('Weather Error', { error: error.message });
+            }
+        }
+
+        // Test market prices
+        async function testMarketPrices() {
+            try {
+                const response = await fetch(`${API_BASE}/api/market/prices`);
+                const data = await response.json();
+                showResult('Market Prices Demo', data);
+            } catch (error) {
+                showResult('Market Prices Error', { error: error.message });
+            }
+        }
+
+        // Test WhatsApp endpoint
+        async function testWhatsApp() {
+            try {
+                const response = await fetch(`${API_BASE}/api/whatsapp/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                showResult('WhatsApp Demo', data);
+            } catch (error) {
+                showResult('WhatsApp Error', { error: error.message });
+            }
+        }
+
+        // Show result
+        function showResult(title, data) {
+            resultContent.textContent = `${title}:\n\n${JSON.stringify(data, null, 2)}`;
+            resultDiv.classList.add('show');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', checkConnection);
+    </script>
+</body>
+</html>
